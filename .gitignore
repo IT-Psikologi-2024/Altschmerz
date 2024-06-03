@@ -24,3 +24,5 @@ yarn-error.log*
 
 *.old
 .vercel
+
+./itp-psychology-credentials.json
