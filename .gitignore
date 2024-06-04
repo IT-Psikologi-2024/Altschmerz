@@ -8,6 +8,7 @@
 
 # production
 /build
+/public
 
 # misc
 .DS_Store
@@ -25,4 +26,4 @@ yarn-error.log*
 *.old
 .vercel
 
-./itp-psychology-credentials.json
+itp-psychology-credentials.json
