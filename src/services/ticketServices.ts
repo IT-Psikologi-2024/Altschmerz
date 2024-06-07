@@ -1,17 +1,24 @@
-import { Request, Response } from 'express';
 import { generateQRCode } from '../utils/qrCodeGenerator';
 import { getAuthToken, appendRow } from './googleSheetsService';
+import { SheetValues } from '../interfaces/sheetValuesInterface';
+import { Request, Response } from 'express';
 import crypto, { UUID } from "crypto"
 import nodemailer from 'nodemailer';
-  
+
 const newTicket = async (req: Request, res: Response) => {
     try {
         const id: UUID = crypto.randomUUID();
-        const name: string = req.body.name;
+        const jenisTiket: string = req.body.jenisTiket;
+        const idLine: string = req.body.idLine;
+        const nama: string = req.body.nama;
+        const noTelepon: string = req.body.noTelepon;
         const email: string = req.body.email;
+        const asalSekolah: string = req.body.asalSekolah;
 
-        await appendSheetValues(id , name, email);
-        await sendEmail(id, name, email);
+        const sheetValues: SheetValues = { id, jenisTiket, idLine, nama, noTelepon, email, asalSekolah };
+
+        await appendSheetValues(sheetValues);
+        await sendEmail(id, nama, email);
 
         return res.status(200).send({ message: "New registrant successfully added to sheet and email sent." });
     } catch (e) {
@@ -19,20 +26,20 @@ const newTicket = async (req: Request, res: Response) => {
     }
 };
 
-async function appendSheetValues(id : UUID, name : string, email : string) {
+async function appendSheetValues(values: SheetValues) {
     try {
         const auth = await getAuthToken();
-        const values = [id, name, email]
         
-        const spreadsheetId = process.env.SPREADSHEET_ID
-        const sheetName = process.env.SHEET_NAME
+        const spreadsheetId = process.env.SPREADSHEET_ID;
+        const sheetName = process.env.SHEET_NAME;
 
-        const response = await appendRow({ spreadsheetId, auth, sheetName, values });
+        const response = await appendRow({ spreadsheetId, auth, sheetName, values: Object.values(values) });
 
         console.log('Row appended:', response.data);
     } catch (error) {
         console.error('Error appending row:', error);
-    }   
+        throw new Error('Failed to append row');
+    }
 }
 
 async function sendEmail(id : UUID, name : string, email : string) {
