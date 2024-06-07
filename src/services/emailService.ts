@@ -1,48 +1,20 @@
 import { generateQRCode } from '../utils/qrCodeGenerator';
-import { getAuthToken, appendRow } from './googleSheetsService';
-import { SheetValues } from '../interfaces/sheetValuesInterface';
 import { Request, Response } from 'express';
-import crypto, { UUID } from "crypto"
+import { UUID } from "crypto";
 import nodemailer from 'nodemailer';
 
-const newTicket = async (req: Request, res: Response) => {
-    try {
-        const id: UUID = crypto.randomUUID();
-        const jenisTiket: string = req.body.jenisTiket;
-        const idLine: string = req.body.idLine;
-        const nama: string = req.body.nama;
-        const noTelepon: string = req.body.noTelepon;
-        const email: string = req.body.email;
-        const asalSekolah: string = req.body.asalSekolah;
+const sendEmail = async (req: Request, res: Response) => {
 
-        const sheetValues: SheetValues = { id, jenisTiket, idLine, nama, noTelepon, email, asalSekolah };
+    const id = "8b62fd55-e7b7-4e56-9a5c-f239157a9779"
+    const nama = req.body.nama
+    const email = req.body.email
 
-        await appendSheetValues(sheetValues);
-        await sendEmail(id, nama, email);
+    await send(id, nama, email)
 
-        return res.status(200).send({ message: "New registrant successfully added to sheet and email sent." });
-    } catch (e) {
-        return res.status(401).json({ error: 'Failed to add to sheet: ' + e.message });
-    }
+    res.status(200).json({message : "Email succesfully sent"})
 };
 
-async function appendSheetValues(values: SheetValues) {
-    try {
-        const auth = await getAuthToken();
-        
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-        const sheetName = process.env.SHEET_NAME;
-
-        const response = await appendRow({ spreadsheetId, auth, sheetName, values: Object.values(values) });
-
-        console.log('Row appended:', response.data);
-    } catch (error) {
-        console.error('Error appending row:', error);
-        throw new Error('Failed to append row');
-    }
-}
-
-async function sendEmail(id : UUID, name : string, email : string) {
+const send = async (id : UUID, name : string, email : string) => {
     try {
         const qrCodePath = await generateQRCode(id);
 
@@ -151,4 +123,4 @@ async function sendEmail(id : UUID, name : string, email : string) {
     }
 }
 
-export { newTicket }
+export { sendEmail }

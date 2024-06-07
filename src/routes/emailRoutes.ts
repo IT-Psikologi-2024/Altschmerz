@@ -1,7 +1,8 @@
-import { newTicket } from "../services/ticketServices";
+import { sendEmail } from "../services/emailService";
 import express from "express";
 
 const router = express.Router();
-router.post("/", newTicket);
+
+router.post("/", sendEmail);
 
 module.exports = router;

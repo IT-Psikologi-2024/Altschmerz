@@ -6,6 +6,10 @@ interface SheetValues {
     noTelepon: string;
     email: string;
     asalSekolah: string;
+    pilihanKelas: string;
+    buktiFollow: string;
+    buktiPembayaran: string;
+    hadir: string
 }
 
 export { SheetValues }
