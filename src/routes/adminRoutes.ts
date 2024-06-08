@@ -5,6 +5,6 @@ import express from "express";
 const router = express.Router();
 
 router.post("/login", login);
-router.post("/attendance/:id", verifyToken, attend);
+router.get("/attendance/:id", verifyToken, attend);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const attend = async (req: Request, res: Response) => {
         const attendeeId = req.params.id
 
         const ids = await sheetGet('Ticket!A1:A1000')
-        const idList = ids.data.values.map((id : any) => id[0])
+        const idList = ids.map((id : any) => id[0])
 
         let rowNumber = 0;
         for (let index = 0; index < idList.length; index++) {
@@ -24,7 +24,10 @@ const attend = async (req: Request, res: Response) => {
 
         await sheetUpdate('Hadir', `Ticket!K${rowNumber}`)
 
-        res.status(200).json({message : "Attendance Success"});
+        const name = await sheetGet(`Ticket!B${rowNumber}`)
+        const nameString = name[0][0]
+
+        res.status(200).json({message : `${nameString} attendance success`});
     } catch (e) {
         console.error('Error while attending:', e.message);
         res.status(500).json({ error: 'Error while attending: ' + e.message });

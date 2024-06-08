@@ -45,7 +45,7 @@ const sheetGet = async (range : string) => {
 
         const response = await sheets.spreadsheets.values.get({spreadsheetId, range});
         
-        return response;
+        return response.data.values;
     } catch (e) {
         throw new Error('Failed to get row: ' + e.message);
     }
