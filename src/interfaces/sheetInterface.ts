@@ -1,4 +1,4 @@
-interface SheetValues {
+interface TicketValues {
     id: string;
     jenisTiket: string;
     idLine: string;
@@ -12,4 +12,4 @@ interface SheetValues {
     hadir: string
 }
 
-export { SheetValues }
+export { TicketValues }

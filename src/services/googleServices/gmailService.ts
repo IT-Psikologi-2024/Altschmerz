@@ -1,10 +1,9 @@
-import { generateQRCode } from '../utils/qrCodeGenerator';
+import { generateQRCode } from '../../utils/qrCodeGenerator';
 import { Request, Response } from 'express';
 import { UUID } from "crypto";
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (req: Request, res: Response) => {
-
     const id = "8b62fd55-e7b7-4e56-9a5c-f239157a9779"
     const nama = req.body.nama
     const email = req.body.email
