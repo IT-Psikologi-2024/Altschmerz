@@ -12,4 +12,24 @@ interface TicketValues {
     hadir: string
 }
 
-export { TicketValues }
+interface MerchValues {
+    id: string;
+    nama: string;
+    idLine: string;
+    noTelepon: string;
+    email: string;
+    alamat: string;
+    kodePos: string;
+    pengambilanBarang: string;
+    notes: string;
+    order: string;
+    totalHarga: number;
+    buktiPembayaran: string;
+}
+
+interface Merch {
+    nama: string;
+    jumlah: number;
+}
+
+export { TicketValues, MerchValues, Merch}

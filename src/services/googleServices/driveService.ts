@@ -11,13 +11,22 @@ const getDriveAuthToken = async () => {
 
 const driveUpload = async (name: string, file: File, type: string) => {
     try {
+        const auth = await getDriveAuthToken();
+        
+        let folder;
+
+        if (type === "Ticket/Payment") {
+            folder = process.env.TICKET_PAYMENT_FOLDER_ID
+        } else if (type === "Ticket/Follow") {
+            folder = process.env.TICKET_FOLLOW_FOLDER_ID
+        } else {
+            folder = process.env.MERCH_PAYMENT_FOLDER_ID
+        }
+
         if (!file.mimetype.startsWith('image/')) {
             throw new Error("Only image files are allowed.");
         }
-
-        const auth = await getDriveAuthToken();
-        const folder = (type === "Ticket/Payment") ? process.env.TICKET_PAYMENT_FOLDER_ID : process.env.TICKET_FOLLOW_FOLDER_ID
-
+        
         const bufferStream = new stream.PassThrough();
         bufferStream.end(file.buffer);
 

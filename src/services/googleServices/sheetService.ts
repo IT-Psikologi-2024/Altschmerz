@@ -1,4 +1,5 @@
 import { TicketValues } from '../../interfaces/sheetInterface';
+import { MerchValues } from '../../interfaces/sheetInterface';
 
 const { google } = require('googleapis');
 
@@ -10,7 +11,7 @@ const getSheetAuthToken = async () => {
     return authToken;
 }
 
-const sheetAppend = async (value : TicketValues, type : string) => {
+const sheetAppend = async (value : TicketValues | MerchValues, type : string) => {
     try {
         const auth = await getSheetAuthToken();
         const sheets = google.sheets('v4');
