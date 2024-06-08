@@ -12,6 +12,7 @@ const getDriveAuthToken = async () => {
 const driveUpload = async (name: string, file: File, type: string) => {
     try {
         const auth = await getDriveAuthToken();
+        const drive = google.drive({ version: "v3", auth })
         
         let folder;
 
@@ -30,7 +31,7 @@ const driveUpload = async (name: string, file: File, type: string) => {
         const bufferStream = new stream.PassThrough();
         bufferStream.end(file.buffer);
 
-        const { data } = await google.drive({ version: "v3", auth }).files.create({
+        const { data } = await drive.files.create({
             media: {
                 mimeType: file.mimetype,
                 body: bufferStream,

@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/ticket", require("./routes/ticketRoutes"));
 app.use("/merch", require("./routes/merchRoutes"));
 
+app.use("/admin", require("./routes/adminRoutes"));
+
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
 });

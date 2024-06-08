@@ -1,19 +1,8 @@
 import { generateQRCode } from '../../utils/qrCodeGenerator';
-import { Request, Response } from 'express';
 import { UUID } from "crypto";
 import nodemailer from 'nodemailer';
 
-const sendEmail = async (req: Request, res: Response) => {
-    const id = "8b62fd55-e7b7-4e56-9a5c-f239157a9779"
-    const nama = req.body.nama
-    const email = req.body.email
-
-    await send(id, nama, email)
-
-    res.status(200).json({message : "Email succesfully sent"})
-};
-
-const send = async (id : UUID, name : string, email : string) => {
+const gmailSend = async (id : UUID, name : string, email : string) => {
     try {
         const qrCodePath = await generateQRCode(id);
 
@@ -122,4 +111,4 @@ const send = async (id : UUID, name : string, email : string) => {
     }
 }
 
-export { sendEmail }
+export { gmailSend }

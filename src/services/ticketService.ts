@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { UUID } from 'crypto';
 import { driveUpload } from './googleServices/driveService';
 import { sheetAppend } from './googleServices/sheetService';
+import { gmailSend } from './googleServices/gmailService';
 
 const ticket = async (req: Request, res: Response) => {
     try {
@@ -27,6 +28,7 @@ const ticket = async (req: Request, res: Response) => {
         const ticketValues: TicketValues = { id, nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas, buktiFollow, buktiPembayaran, hadir : "Tidak"};
 
         await sheetAppend(ticketValues, "Ticket")
+        // await gmailSend(id, nama, email)
         
         res.status(200).json({message : "Ticketing success"});
     } catch (e) {

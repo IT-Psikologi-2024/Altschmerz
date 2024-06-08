@@ -11,18 +11,16 @@ const getSheetAuthToken = async () => {
     return authToken;
 }
 
-const sheetAppend = async (value : TicketValues | MerchValues, type : string) => {
+const sheetAppend = async (value : TicketValues | MerchValues, range : string) => {
     try {
         const auth = await getSheetAuthToken();
-        const sheets = google.sheets('v4');
+        const sheets = google.sheets({auth, version: "v4"})
         
         const spreadsheetId = process.env.SPREADSHEET_ID;
-        const sheetName = (type === "Ticket") ? process.env.TICKET_SHEET_NAME : process.env.MERCH_SHEET_NAME;
 
         const response= await sheets.spreadsheets.values.append({
                 spreadsheetId,
-                auth,
-                range: sheetName,
+                range,
                 valueInputOption: 'RAW',
                 resource: {
                     values: [Object.values(value)],
@@ -38,4 +36,41 @@ const sheetAppend = async (value : TicketValues | MerchValues, type : string) =>
     }
 };
 
-export { sheetAppend }
+const sheetGet = async (range : string) => {
+    try {
+        const auth = await getSheetAuthToken();
+        const sheets = google.sheets({auth, version: "v4"})
+        
+        const spreadsheetId = process.env.SPREADSHEET_ID;
+
+        const response = await sheets.spreadsheets.values.get({spreadsheetId, range});
+        
+        return response;
+    } catch (e) {
+        throw new Error('Failed to get row: ' + e.message);
+    }
+};
+
+const sheetUpdate = async (value : string, range : string) => {
+    try {
+        const auth = await getSheetAuthToken();
+        const sheets = google.sheets({auth, version: "v4"})
+        
+        const spreadsheetId = process.env.SPREADSHEET_ID;
+
+        const response = await sheets.spreadsheets.values.update({
+            spreadsheetId, 
+            range, 
+            valueInputOption : 'RAW', 
+            resource: {
+                values: [[value]],
+            }}
+        );
+        
+        return response;
+    } catch (e) {
+        throw new Error('Failed to update value: ' + e.message);
+    }
+}
+
+export { sheetAppend, sheetGet, sheetUpdate}
