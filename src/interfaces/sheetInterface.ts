@@ -9,7 +9,6 @@ interface TicketValues {
     pilihanKelas: string;
     buktiFollow: string;
     buktiPembayaran: string;
-    hadir: string
 }
 
 interface MerchValues {

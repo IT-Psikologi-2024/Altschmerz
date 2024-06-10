@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { generateJWT } from '../utils/jwtGenerator';
 import { sheetGet, sheetUpdate } from './googleServices/sheetService';
+import { gmailSend } from './googleServices/gmailService';
 
 const attend = async (req: Request, res: Response) => {
     try {
@@ -22,12 +23,12 @@ const attend = async (req: Request, res: Response) => {
             return;
         }
 
-        await sheetUpdate('Hadir', `Ticket!K${rowNumber}`)
+        await sheetUpdate('Iya', `Ticket!M${rowNumber}`)
 
         const name = await sheetGet(`Ticket!B${rowNumber}`)
         const nameString = name[0][0]
 
-        res.status(200).json({message : `${nameString} attendance success`});
+        res.status(200).json({message : nameString});
     } catch (e) {
         console.error('Error while attending:', e.message);
         res.status(500).json({ error: 'Error while attending: ' + e.message });
@@ -56,5 +57,37 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
+const ticketEmail = async (req: Request, res: Response) => {
+    try {
+        const sheetData = await sheetGet('Ticket!A1:L1000');
+        
+        const ids = sheetData.map((row : string[])=> row[0]);
+        const names = sheetData.map((row : string[])=> row[1]);
+        const emails = sheetData.map((row : string[])=> row[4]);
+        const verified = sheetData.map((row : string[])=> row[10]);
+        const emailStatus = sheetData.map((row : string[])=> row[11]);
 
-export { login, attend}
+        for (let index = 1; index < ids.length; index++) {
+            const id = ids[index];
+            const name = names[index];
+            const email = emails[index];
+            const isVerified = verified[index] === "Iya";
+            const isPending = emailStatus[index] === "Pending";
+
+            if (isVerified && isPending) {
+                console.log("Sending to: " + email);
+                await gmailSend(id, name, email);
+                await sheetUpdate('Terkirim', `Ticket!L${index + 1}`);
+            }
+        }
+
+        res.status(200).json({ message: "Success" });
+    } catch (e) {
+        console.error('Error while sending ticket email:', e.message);
+        res.status(500).json({ error: 'Error while sending ticket email: ' + e.message });
+    }
+}
+
+
+
+export { login, attend, ticketEmail}
