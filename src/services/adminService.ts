@@ -57,6 +57,25 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
+const getVerifiedAttendee = async (req: Request, res: Response) => {
+    try {
+        const sheetData = await sheetGet('Ticket!A1:L1000');
+
+        const data = sheetData
+            .filter((row : string[]) => row[10] === "Iya" && row[11] === "Pending")
+            .map((row : string[]) => {
+                const name = row[1];
+                const email = row[4];
+                return { name, email};
+            });
+
+        res.status(200).json( data );
+    } catch (e) {
+        console.error('Error while getting verified attendee:', e.message);
+        res.status(500).json({ error: 'Error while getting verified attendee: ' + e.message });
+    }
+}
+
 const ticketEmail = async (req: Request, res: Response) => {
     try {
         const sheetData = await sheetGet('Ticket!A1:L1000');
@@ -88,6 +107,4 @@ const ticketEmail = async (req: Request, res: Response) => {
     }
 }
 
-
-
-export { login, attend, ticketEmail}
+export { login, attend, ticketEmail, getVerifiedAttendee}
