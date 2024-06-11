@@ -8,8 +8,8 @@ import { sheetAppend } from './googleServices/sheetService';
 const ticket = async (req: Request, res: Response) => {
     try {
         const id: UUID = crypto.randomUUID();
-        const { nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas : pilihanKelasList} = req.body;
-        const pilihanKelas = pilihanKelasList.join(", ")
+        const { nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas} = req.body;
+        const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = pilihanKelas
 
         const files = req.files as File[]
 
@@ -24,7 +24,20 @@ const ticket = async (req: Request, res: Response) => {
         const buktiFollow = await driveUpload(nama, fileBuktiFollow, "Ticket/Follow")
         const buktiPembayaran = await driveUpload(nama, fileBuktiPembayaran, "Ticket/Payment")
 
-        const ticketValues: TicketValues = { id, nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas, buktiFollow, buktiPembayaran };
+        const ticketValues: TicketValues = { 
+            id, 
+            nama, 
+            idLine, 
+            noTelepon, 
+            email, 
+            asalSekolah, 
+            jenisTiket, 
+            pilihanPertama, 
+            pilihanKedua,
+            pilihanKetiga,
+            buktiFollow, 
+            buktiPembayaran
+        };
 
         await sheetAppend(ticketValues, "Ticket")
         

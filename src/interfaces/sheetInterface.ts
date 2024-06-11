@@ -6,7 +6,9 @@ interface TicketValues {
     noTelepon: string;
     email: string;
     asalSekolah: string;
-    pilihanKelas: string;
+    pilihanPertama: string;
+    pilihanKedua: string;
+    pilihanKetiga: string;
     buktiFollow: string;
     buktiPembayaran: string;
 }

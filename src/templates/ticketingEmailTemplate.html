@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Psychology - Universitas Indonesia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .im {
+            color: black;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header img {
+            width: 100%;
+        }
+        .content {
+            padding: 20px;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .qr-code img {
+            width: 300px;
+            height: 300px;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #666666;
+        }
+        .whatsapp-link {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .whatsapp-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #25D366;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- <img src="../../public/header-email.png" alt="Header Image"> -->
+            <img src="cid:header" alt="header">
+        </div>
+        <div class="content">
+            <p>Halo <span class="highlight">{{name}}</span>,</p>
+            <p>Terima kasih sudah mendaftar untuk acara <span class="highlight">Introduction to Psychology Fakultas Psikologi, Universitas Indonesia</span>.</p>
+            <p>Berikut adalah simulasi kelasmu:</p>
+            <div class="highlight">{{kelas}}</div>
+            <p>Tanggal main event: <span class="highlight">10 Juni 2024</span></p>
+
+            <div class="qr-code">
+                <p style="margin: 0;">Pakai kode QR di bawah ini untuk registrasi di main event:</p>
+                <!-- <img src="../../public/qrcode.png" alt="QR Code"> -->
+                <img src="cid:qrcode" alt="header">
+            </div>
+
+            <div class="whatsapp-link">
+                <p >Gabung grup Whatsapp kita untuk informasi lebih lanjut</p>
+                <a href="{{whatsappLink}}" target="_blank" class="whatsapp-button">Gabung Grup Whatsapp</a>
+            </div>
+            
+            <p>Sampai bertemu di main event, ya!</p>
+            <p>Salam hangat,<br>Panitia Introduction to Psychology</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Fakultas Psikologi, Universitas Indonesia</p>
+        </div>
+    </div>
+</body>
+</html>
