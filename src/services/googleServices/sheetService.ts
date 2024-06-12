@@ -73,4 +73,43 @@ const sheetUpdate = async (value : string, range : string) => {
     }
 }
 
-export { sheetAppend, sheetGet, sheetUpdate}
+async function sheetMerge(spreadsheetId: string, sheetId: number, startRowIndex: number, endRowIndex: number) {
+  const auth = await getSheetAuthToken();
+  const sheets = google.sheets({ auth, version: 'v4' });
+
+  const requests = [{
+    mergeCells: {
+      range: {
+        sheetId: sheetId,
+        startRowIndex: startRowIndex,
+        endRowIndex: endRowIndex,
+        startColumnIndex: 0,
+        endColumnIndex: 9
+      },
+      mergeType: 'MERGE_COLUMNS'
+    }
+  },
+  {
+    mergeCells: {
+      range: {
+        sheetId: sheetId,
+        startRowIndex: startRowIndex,
+        endRowIndex: endRowIndex,
+        startColumnIndex: 12,
+        endColumnIndex: 18
+      },
+      mergeType: 'MERGE_COLUMNS'
+    }
+  }
+];
+
+  const batchUpdateRequest = { requests };
+  const result = await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    resource: batchUpdateRequest
+  });
+
+  return result;
+}
+
+export { getSheetAuthToken, sheetAppend, sheetGet, sheetUpdate, sheetMerge}

@@ -23,14 +23,22 @@ interface MerchValues {
     kodePos: string;
     pengambilanBarang: string;
     notes: string;
-    order: string;
+
+    item: string;
+    jumlah: number;
+    harga: number;
     totalHarga: number;
+
+    extraBubblewrap: number;
+    ongkir: number;
+    
     buktiPembayaran: string;
 }
 
 interface Merch {
     nama: string;
     jumlah: number;
+    harga: number
 }
 
 export { TicketValues, MerchValues, Merch}
