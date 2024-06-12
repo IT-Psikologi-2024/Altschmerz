@@ -1,9 +1,9 @@
-import { TicketValues } from '../interfaces/sheetInterface';
-import { File } from '../interfaces/fileInterface';
 import { Request, Response } from 'express';
-import { UUID } from 'crypto';
 import { driveUpload } from './googleServices/driveService';
 import { sheetAppend } from './googleServices/sheetService';
+import { TicketValues } from '../interfaces/sheetInterface';
+import { File } from '../interfaces/fileInterface';
+import { UUID } from 'crypto';
 
 const ticket = async (req: Request, res: Response) => {
     try {
@@ -39,7 +39,7 @@ const ticket = async (req: Request, res: Response) => {
             buktiPembayaran
         };
 
-        await sheetAppend(ticketValues, "Ticket")
+        await sheetAppend([Object.values(ticketValues)], "Ticket")
         
         res.status(200).json({message : "Ticketing success"});
     } catch (e) {

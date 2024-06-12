@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { generateJWT } from '../utils/jwtGenerator';
 import { sheetGet, sheetUpdate } from './googleServices/sheetService';
 import { gmailSend } from './googleServices/gmailService';
 import { generateQRCode } from '../utils/qrCodeGenerator';
+import { generateJWT } from '../utils/jwtGenerator';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -70,7 +70,7 @@ const getVerifiedAttendee = async (req: Request, res: Response) => {
             .map((row : string[]) => {
                 const name = row[1];
                 const email = row[4];
-                return { name, email};
+                return { name, email };
             });
 
         res.status(200).json( data );
@@ -83,6 +83,7 @@ const getVerifiedAttendee = async (req: Request, res: Response) => {
 const ticketEmail = async (req: Request, res: Response) => {
     try {
         const sheetData = await sheetGet('Ticket!A1:P1000');
+        const attendanceUrl = process.env.ATTENDANCE_URL
         
         const ids = sheetData.map((row : string[])=> row[0]);
         const names = sheetData.map((row : string[])=> row[1]);
@@ -100,15 +101,16 @@ const ticketEmail = async (req: Request, res: Response) => {
             const isPending = emailStatus[index] === "Pending";
 
             if (isVerified && isPending) {
-
-                const qrCodePath = await generateQRCode(id);
-                const headerPath = path.join(__dirname, '../../public/header-email.png');
+                
+                const qrCodePath = await generateQRCode(attendanceUrl + id);
+                const headerPath = path.join(__dirname, '../../public/images/header-email.png');
                 const templatePath = path.join(__dirname, '../templates/ticketingEmailTemplate.html');
 
                 let html = await fs.readFile(templatePath, 'utf-8');
-                html = html.replace('{{name}}', name);
-                html = html.replace('{{kelas}}', kelas);
-                html = html.replace('{{whatsappLink}}', 'https://faq.whatsapp.com/5913398998672934/?locale=id_ID'); //TODO
+                html = html.replace('{{ now }}', Date.now().toString());
+                html = html.replace('{{ name }}', name);
+                html = html.replace('{{ kelas }}', kelas);
+                html = html.replace('{{ whatsappLink }}', 'https://chat.whatsapp.com/BlypVzeSg2A0kqcVHknFme');
 
                 const mailOptions = {
                     from: process.env.GMAIL_EMAIL,

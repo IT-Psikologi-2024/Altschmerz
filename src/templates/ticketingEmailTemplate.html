@@ -48,6 +48,7 @@
             margin-bottom: 40px;
         }
         .whatsapp-button {
+            color: #ffffff;
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
@@ -66,25 +67,23 @@
 <body>
     <div class="container">
         <div class="header">
-            <!-- <img src="../../public/header-email.png" alt="Header Image"> -->
             <img src="cid:header" alt="header">
         </div>
         <div class="content">
-            <p>Halo <span class="highlight">{{name}}</span>,</p>
+            <p>Halo <span class="highlight">{{ name }}</span>,</p>
             <p>Terima kasih sudah mendaftar untuk acara <span class="highlight">Introduction to Psychology Fakultas Psikologi, Universitas Indonesia</span>.</p>
             <p>Berikut adalah simulasi kelasmu:</p>
-            <div class="highlight">{{kelas}}</div>
+            <div class="highlight">{{ kelas }}</div>
             <p>Tanggal main event: <span class="highlight">10 Juni 2024</span></p>
 
             <div class="qr-code">
                 <p style="margin: 0;">Pakai kode QR di bawah ini untuk registrasi di main event:</p>
-                <!-- <img src="../../public/qrcode.png" alt="QR Code"> -->
                 <img src="cid:qrcode" alt="header">
             </div>
 
             <div class="whatsapp-link">
                 <p >Gabung grup Whatsapp kita untuk informasi lebih lanjut, ya!</p>
-                <a href="{{whatsappLink}}" target="_blank" class="whatsapp-button">Gabung Grup Whatsapp</a>
+                <a href="{{ whatsappLink }}" target="_blank" class="whatsapp-button">Gabung Grup Whatsapp</a>
             </div>
             
             <p>Sampai bertemu di main event, ya!</p>
@@ -95,4 +94,5 @@
         </div>
     </div>
 </body>
+<span style="opacity: 0"> {{ now }} </span>
 </html>

@@ -2,6 +2,7 @@ import { TicketValues } from '../../interfaces/sheetInterface';
 import { MerchValues } from '../../interfaces/sheetInterface';
 
 const { google } = require('googleapis');
+const spreadsheetId = process.env.SPREADSHEET_ID;
 
 const getSheetAuthToken = async () => {
     const auth = new google.auth.GoogleAuth({
@@ -11,19 +12,17 @@ const getSheetAuthToken = async () => {
     return authToken;
 }
 
-const sheetAppend = async (value : TicketValues | MerchValues, range : string) => {
+const sheetAppend = async (values : TicketValues [][]| MerchValues [][], range : string) => {
     try {
         const auth = await getSheetAuthToken();
         const sheets = google.sheets({auth, version: "v4"})
         
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-
         const response= await sheets.spreadsheets.values.append({
                 spreadsheetId,
                 range,
                 valueInputOption: 'RAW',
                 resource: {
-                    values: [Object.values(value)],
+                    values: values,
                 },
             });
         
@@ -41,8 +40,6 @@ const sheetGet = async (range : string) => {
         const auth = await getSheetAuthToken();
         const sheets = google.sheets({auth, version: "v4"})
         
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-
         const response = await sheets.spreadsheets.values.get({spreadsheetId, range});
         
         return response.data.values;
@@ -56,8 +53,6 @@ const sheetUpdate = async (value : string, range : string) => {
         const auth = await getSheetAuthToken();
         const sheets = google.sheets({auth, version: "v4"})
         
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-
         const response = await sheets.spreadsheets.values.update({
             spreadsheetId, 
             range, 
@@ -73,35 +68,9 @@ const sheetUpdate = async (value : string, range : string) => {
     }
 }
 
-async function sheetMerge(spreadsheetId: string, sheetId: number, startRowIndex: number, endRowIndex: number) {
+const sheetRequest= async (requests: any) => {
   const auth = await getSheetAuthToken();
   const sheets = google.sheets({ auth, version: 'v4' });
-
-  const requests = [{
-    mergeCells: {
-      range: {
-        sheetId: sheetId,
-        startRowIndex: startRowIndex,
-        endRowIndex: endRowIndex,
-        startColumnIndex: 0,
-        endColumnIndex: 9
-      },
-      mergeType: 'MERGE_COLUMNS'
-    }
-  },
-  {
-    mergeCells: {
-      range: {
-        sheetId: sheetId,
-        startRowIndex: startRowIndex,
-        endRowIndex: endRowIndex,
-        startColumnIndex: 12,
-        endColumnIndex: 18
-      },
-      mergeType: 'MERGE_COLUMNS'
-    }
-  }
-];
 
   const batchUpdateRequest = { requests };
   const result = await sheets.spreadsheets.batchUpdate({
@@ -112,4 +81,4 @@ async function sheetMerge(spreadsheetId: string, sheetId: number, startRowIndex:
   return result;
 }
 
-export { getSheetAuthToken, sheetAppend, sheetGet, sheetUpdate, sheetMerge}
+export { sheetAppend, sheetGet, sheetUpdate, sheetRequest }

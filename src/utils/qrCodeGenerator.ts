@@ -4,7 +4,7 @@ import QRCode from 'qrcode';
 
 async function generateQRCode(link : string) {
     try {
-        const qrCodeDir = path.join(__dirname, '../../public');
+        const qrCodeDir = path.join(__dirname, '../../public/images');
         const qrCodePath = path.join(qrCodeDir, 'qrcode.png');
         await ensureDirectoryExistence(qrCodePath);
         await QRCode.toFile(qrCodePath, link, { errorCorrectionLevel: 'H' });
