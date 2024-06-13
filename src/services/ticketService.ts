@@ -9,7 +9,7 @@ const ticket = async (req: Request, res: Response) => {
     try {
         const id: UUID = crypto.randomUUID();
         const { nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas} = req.body;
-        const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = pilihanKelas
+        const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = JSON.parse(pilihanKelas)
 
         const files = req.files as File[]
 
