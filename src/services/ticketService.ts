@@ -5,11 +5,39 @@ import { TicketValues } from '../interfaces/sheetInterface';
 import { File } from '../interfaces/fileInterface';
 import { UUID } from 'crypto';
 
+let requestQueue: {req: Request, res: Response} [] = []
+let isProcessing = false
+
+const ticketQueue = (req: Request, res: Response) => {
+    requestQueue.push({req, res})
+    processQueue()
+}
+
+const processQueue = async () => {
+    if (isProcessing || requestQueue.length === 0) {
+        return;
+    }
+
+    isProcessing = true
+
+    const { req, res } = requestQueue.shift();
+
+    try {
+        await ticket(req, res)
+    } catch (error)  {
+        console.error('Error processing ticket request:', error);
+    } 
+
+    isProcessing = false
+    processQueue()
+}
+
 const ticket = async (req: Request, res: Response) => {
     try {
         const id: UUID = crypto.randomUUID();
         const { nama, idLine, noTelepon, email, asalSekolah, jenisTiket, pilihanKelas} = req.body;
-        const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = JSON.parse(pilihanKelas)
+        // const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = JSON.parse(pilihanKelas)
+        const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = pilihanKelas
 
         const files = req.files as File[]
 
@@ -48,4 +76,4 @@ const ticket = async (req: Request, res: Response) => {
     }
 };
 
-export { ticket }
+export { ticketQueue }

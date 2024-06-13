@@ -5,6 +5,33 @@ import { Merch, MerchValues } from '../interfaces/sheetInterface';
 import { File } from '../interfaces/fileInterface';
 import { v4 as uuidv4 } from 'uuid';
 
+let requestQueue: {req: Request, res: Response} [] = []
+let isProcessing = false
+
+const merchQueue = (req: Request, res: Response) => {
+    requestQueue.push({req, res})
+    processQueue()
+}
+
+const processQueue = async () => {
+    if (isProcessing || requestQueue.length === 0) {
+        return;
+    }
+
+    isProcessing = true
+
+    const { req, res } = requestQueue.shift();
+
+    try {
+        await merch(req, res)
+    } catch (error)  {
+        console.error('Error processing merch request:', error);
+    } 
+
+    isProcessing = false
+    processQueue()
+}
+
 const merch = async (req: Request, res: Response) => {
   try {
     const id = uuidv4();
@@ -107,4 +134,4 @@ const countTotalHarga = async (orders: Merch [], extraBubblewrap: number, ongkir
     return totalHarga
 }
 
-export { merch }
+export { merchQueue }
