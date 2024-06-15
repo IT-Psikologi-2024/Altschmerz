@@ -49,6 +49,7 @@ const merch = async (req: Request, res: Response) => {
     const fileBuktiPembayaran = files[0];
     const buktiPembayaran = await driveUpload(nama, fileBuktiPembayaran, "Merch/Payment");
 
+    const banyak_item = orders.length
     let startRowIndex;
     let endRowIndex;
 
@@ -63,6 +64,7 @@ const merch = async (req: Request, res: Response) => {
         kodePos,
         pengambilanBarang,
         notes,
+        banyak_item,
         item: item.nama,
         jumlah: item.jumlah,
         harga: item.harga,
@@ -90,7 +92,7 @@ const merch = async (req: Request, res: Response) => {
             startRowIndex: startRowIndex,
             endRowIndex: endRowIndex,
             startColumnIndex: 0,
-            endColumnIndex: 9
+            endColumnIndex: 10
           },
           mergeType: 'MERGE_COLUMNS'
         }
@@ -101,8 +103,8 @@ const merch = async (req: Request, res: Response) => {
             sheetId: sheetId,
             startRowIndex: startRowIndex,
             endRowIndex: endRowIndex,
-            startColumnIndex: 12,
-            endColumnIndex: 18
+            startColumnIndex: 13,
+            endColumnIndex: 19
           },
           mergeType: 'MERGE_COLUMNS'
         }

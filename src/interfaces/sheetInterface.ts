@@ -24,6 +24,7 @@ interface MerchValues {
     pengambilanBarang: string;
     notes: string;
 
+    banyak_item: number;
     item: string;
     jumlah: number;
     harga: number;
