@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { sheetGet, sheetUpdate } from './googleServices/sheetService';
 import { gmailSend } from './googleServices/gmailService';
-import { generateQRCode } from '../utils/qrCodeGenerator';
 import { Merch } from '../interfaces/sheetInterface';
 import * as ics from 'ics';
 import fs from 'fs/promises';
@@ -49,6 +48,7 @@ const ticketEmail = async (req: Request, res: Response) => {
     try {
         const sheetData = await sheetGet('Ticket!A1:P1000');
         const adminUrl = process.env.ADMIN_URL
+        const qrCodeUrl = process.env.QRCODE_URL
         
         const ids = sheetData.map((row : string[])=> row[0]);
         const names = sheetData.map((row : string[])=> row[1]);
@@ -57,6 +57,7 @@ const ticketEmail = async (req: Request, res: Response) => {
         const verified = sheetData.map((row : string[])=> row[13]);
         const emailStatus = sheetData.map((row : string[])=> row[14]);
 
+        const promises = []
         for (let i = 1; i < ids.length; i++) {
             const id = ids[i];
             const name = names[i];
@@ -67,7 +68,7 @@ const ticketEmail = async (req: Request, res: Response) => {
 
             if (isVerified && isPending) {
                 
-                const qrCodePath = await generateQRCode(adminUrl + "/attendance/" + id);
+                const qrCodeURL = qrCodeUrl + adminUrl + "/attendance/" + id;
                 const headerPath = path.join(__dirname, '../../public/images/header-email.png');
                 const templatePath = path.join(__dirname, '../templates/ticketingEmailTemplate.html');
 
@@ -75,6 +76,7 @@ const ticketEmail = async (req: Request, res: Response) => {
                 html = html.replace('{{ now }}', Date.now().toString());
                 html = html.replace('{{ name }}', name);
                 html = html.replace('{{ kelas }}', kelas);
+                html = html.replace('{{ qrCodeURL }}', qrCodeURL);
                 html = html.replace('{{ whatsappLink }}', 'https://chat.whatsapp.com/BlypVzeSg2A0kqcVHknFme');
 
                 const mailOptions = {
@@ -83,25 +85,28 @@ const ticketEmail = async (req: Request, res: Response) => {
                     subject: 'Introduction to Psychology - Universitas Indonesia',
                     html: html,
                     attachments: [{
-                        filename: 'qrcode.png',
-                        path: qrCodePath,
-                        cid: 'qrcode'
-                    },{
                         filename: 'header-email.png',
                         path: headerPath,
                         cid: 'header'
                     }]
                 };
                 
-                await gmailSend(mailOptions);
-                await sheetUpdate('Terkirim', `Ticket!O${i + 1}`);
+                promises.push (gmailSend(mailOptions)
+                    .then (async (recipient : string) => {
+                        console.log(`Email sent successfully to: ${recipient}`);
+                        await sheetUpdate('Terkirim', `Ticket!O${i + 1}`);
+                    })
+                    .catch((sendError) => {
+                        console.error(`Failed to send email to ${email}:`, sendError.message);
+                    }))
             }
         }
 
+        await Promise.all(promises)
         res.status(200).json({ message: "Success" });
     } catch (e) {
-        console.error('Error while sending ticket email:', e.message);
         res.status(500).json({ error: 'Error while sending ticket email: ' + e.message });
+        console.error('Error while sending ticket email:', e.message);
     }
 }
 
@@ -127,7 +132,7 @@ const merchEmail = async (req: Request, res: Response) => {
         const verified = sheetData.map((row : string[])=> row[17]);
         const emailStatus = sheetData.map((row : string[])=> row[18]);
 
-        
+        const promises = []
                 
         for (let i = 1; i < ids.length; i++) {
             const id = ids[i];
@@ -262,11 +267,18 @@ const merchEmail = async (req: Request, res: Response) => {
                     attachments: attachments
                 };
                 
-                await gmailSend(mailOptions);
-                await sheetUpdate('Terkirim', `Merch!S${i + 1}`);
+                promises.push (gmailSend(mailOptions)
+                    .then (async (recipient : string) => {
+                        await sheetUpdate('Terkirim', `Merch!S${i + 1}`);
+                        console.log(`Email sent successfully to: ${recipient}`);
+                    })
+                    .catch((sendError) => {
+                        console.error(`Failed to send email to ${email}:`, sendError.message);
+                    }))
             }
         }
 
+         await Promise.all(promises)
          res.status(200).json({ message: "Success" });
     } catch (e) {
         console.error('Error while sending merch email:', e.message);

@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 
 const gmailSend = async (mailOptions: any) => {
     try {
-
+        const recipient = mailOptions.to;
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -12,7 +12,7 @@ const gmailSend = async (mailOptions: any) => {
         });
 
         await transporter.sendMail(mailOptions);
-        console.log('Email sent to:', mailOptions.to);
+        return recipient;
     } catch (error) {
         throw new Error(error);
     }
