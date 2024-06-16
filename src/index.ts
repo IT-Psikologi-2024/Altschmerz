@@ -30,6 +30,7 @@ app.use("/ticket", require("./routes/ticketRoutes"));
 app.use("/merch", require("./routes/merchRoutes"));
 
 app.use("/admin", require("./routes/adminRoutes"));
+app.use("/email", require("./routes/emailRoutes"));
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
