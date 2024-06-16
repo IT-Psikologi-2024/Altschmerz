@@ -4,6 +4,7 @@ import { gmailSend } from './googleServices/gmailService';
 import { generateQRCode } from '../utils/qrCodeGenerator';
 import { generateJWT } from '../utils/jwtGenerator';
 import { Merch } from '../interfaces/sheetInterface';
+import * as ics from 'ics';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -183,6 +184,8 @@ const merchEmail = async (req: Request, res: Response) => {
         const verified = sheetData.map((row : string[])=> row[17]);
         const emailStatus = sheetData.map((row : string[])=> row[18]);
 
+        
+                
         for (let i = 1; i < ids.length; i++) {
             const id = ids[i];
             if (id === '') {
@@ -197,6 +200,21 @@ const merchEmail = async (req: Request, res: Response) => {
             
             const bubbleWrap = (bubbleWraps[i] === '' ? false : true)
             const shippingCost = shippingCosts[i] 
+
+            const event :any = {
+                start: [2024, 6, 30, 10, 0],
+                duration: { hours: 1 },
+                title: 'Pickup Merchandise ITP 2024',
+                description: 'Pickup your merchandise at Fakultas Psikologi, Universitas Indonesia.',
+                location: 'Fakultas Psikologi, Universitas Indonesia',
+                geo: { lat: -6.36275, lon: 106.83197 },
+                status: 'CONFIRMED',
+                busyStatus: 'BUSY',
+                organizer: { name: 'ITP 2024', email: process.env.GMAIL_EMAIL },
+                attendees: [{ name, email }]
+            };
+              
+            const value = ics.createEvent(event)
 
             let orders : Merch []= []
             for (let j = i ; j < i + Number(totalOrder) ;j++) {
@@ -214,6 +232,21 @@ const merchEmail = async (req: Request, res: Response) => {
                 
                 const headerPath = path.join(__dirname, '../../public/images/header-email.png');
                 const templatePath = path.join(__dirname, '../templates/merchandiseEmailTemplate.html');
+
+                const attachments : any = [{
+                    filename: 'header-email.png',
+                    path: headerPath,
+                    cid: 'header'
+                }]
+
+                if (shippingMethod === 'Fakultas Psikologi UI') {
+                    attachments.push({
+                        filename: 'Pickup Merchandise ITP 2024.ics',
+                        content: `${value.value}`,
+                        contentType: 'text/calendar',
+                        cid: 'merch-pickup'
+                    })
+                }
 
                 let html = await fs.readFile(templatePath, 'utf-8');
                 html = html.replace('{{ orders }}', `
@@ -260,19 +293,17 @@ const merchEmail = async (req: Request, res: Response) => {
                 )
 
                 html = html.replace('{{ shipping }}', `
-                    <p>
-                        ${shippingMethod != 'Fakultas Psikologi UI' ? `<span>Paket Anda akan dikirim ke alamat berikut: <span class="highlight">{{ address }}</span>` :
-                        `Anda telah memilih untuk mengambil paket di Fakultas Psikologi, Universitas Indonesia. Silakan kunjungi alamat berikut untuk mengambil pesanan Anda:<br>
-                        <span class="highlight">Fakultas Psikologi, Universitas Indonesia</span><br>
-                        <div class="button-container">
-                            <a href="https://maps.app.goo.gl/c2VE3jHxTFiKcuUNA" target="_blank" class="button maps-button">Lihat di Google Maps</a>
-                        </div>
-                        <div class="button-container">
-                            <a href="{{ icsDownloadLink }}" target="_blank" class="button calendar-button">Download Tanggal Pengambilan</a>
-                        </div>`
-                        }
-                    </p>`
-                )
+                    <br>
+                        ${shippingMethod != 'Fakultas Psikologi UI' ? `<p>Paket kamu akan dikirim ke alamat berikut: <span class="highlight">{{ address }}</span></p>` :
+                        `<p>Kamu memilih untuk mengambil paket di <span class="highlight">Fakultas Psikologi, Universitas Indonesia.</span> </p>
+                         <p>Silakan kunjungi alamat berikut untuk mengambil pesanan kamu di tanggal yang sudah ditentukan, ya:</p>
+                         <div class="button-container">
+                            <a style="color: #FFFFFF; text-decoration: none;" href="https://maps.app.goo.gl/c2VE3jHxTFiKcuUNA" target="_blank" class="button maps-button">Lihat di Google Maps</a>
+                         </div>
+                         <p>Kamu bisa download lampiran kalender untuk tanggal pengambilannya.</p>`}
+                    </p>
+                    <br>`
+                );
 
                 html = html.replace('{{ now }}', Date.now().toString());
                 html = html.replace('{{ name }}', name);
@@ -285,22 +316,18 @@ const merchEmail = async (req: Request, res: Response) => {
                     to: email,
                     subject: 'Introduction to Psychology - Universitas Indonesia',
                     html: html,
-                    attachments: [{
-                        filename: 'header-email.png',
-                        path: headerPath,
-                        cid: 'header'
-                    }]
+                    attachments: attachments
                 };
                 
                 await gmailSend(mailOptions);
-                await sheetUpdate('Terkirim', `Ticket!S${i + 1}`);
+                await sheetUpdate('Terkirim', `Merch!S${i + 1}`);
             }
         }
 
          res.status(200).json({ message: "Success" });
     } catch (e) {
-        console.error('Error while sending ticket email:', e.message);
-        res.status(500).json({ error: 'Error while sending ticket email: ' + e.message });
+        console.error('Error while sending merch email:', e.message);
+        res.status(500).json({ error: 'Error while sending merch email: ' + e.message });
     }
 }
 

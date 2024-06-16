@@ -11,6 +11,13 @@
             margin: 0;
             padding: 0;
         }
+        p {
+            color: black;
+        }
+        p .highlight {
+            font-weight: bold;
+            color: black;
+        }
         .container {
             width: 100%;
             max-width: 600px;
@@ -31,10 +38,6 @@
             padding: 10px 0;
             font-size: 12px;
             color: #666666;
-        }
-        .highlight {
-            font-weight: bold;
-            color: #333333;
         }
         table {
             width: 100%;
@@ -75,12 +78,6 @@
         .maps-button:hover {
             background-color: #2a8645;
         }
-        .calendar-button {
-            background-color: #4285F4;
-        }
-        .calendar-button:hover {
-            background-color: #3367d6;
-        }
     </style>
 </head>
 <body>
@@ -90,20 +87,21 @@
         </div>
         <div class="content">
             <p>Halo <span class="highlight">{{ name }}</span>,</p>
-            <p>Terima kasih telah membeli merchandise dari Fakultas Psikologi, Universitas Indonesia.</p>
+            <p>Terima kasih sudah membeli merchandise dari ITP 2024!</p>
             
             <p>Berikut adalah detail pesananmu:</p>
             
             <div>{{ orders }}</div>
-            <div>{{ shipping }}</div>
+            <div style="text-align: center;">{{ shipping }}</div>
             
             <p>Untuk informasi lebih lanjut, silakan hubungi kami atau kunjungi website kami.</p>
-            <p>Salam hangat,<br>Panitia Merchandise Fakultas Psikologi</p>
+            <p>Salam hangat,<br>Panitia Introduction to Psychology</p>
         </div>
-        <div class="footer">
-            <p>&copy; 2024 Fakultas Psikologi, Universitas Indonesia</p>
+        <div>
+            <p class="footer">&copy; 2024 Fakultas Psikologi, Universitas Indonesia</p>
         </div>
     </div>
 </body>
+<span style="opacity: 0"> {{ now }} </span>
 </html>
 

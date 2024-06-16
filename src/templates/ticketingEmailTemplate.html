@@ -11,7 +11,11 @@
             margin: 0;
             padding: 0;
         }
-        .im {
+        p {
+            color: black;
+        }
+        p .highlight {
+            font-weight: bold;
             color: black;
         }
         .container {
@@ -31,7 +35,6 @@
         }
         .qr-code {
             text-align: center;
-            margin-top: 40px;
         }
         .qr-code img {
             width: 300px;
@@ -45,26 +48,24 @@
         }
         .whatsapp-link {
             text-align: center;
-            margin-bottom: 40px;
         }
         .whatsapp-button {
             color: #ffffff;
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #25D366;
+            background-color: #34A853;
             border: none;
             border-radius: 5px;
             text-decoration: none;
             cursor: pointer;
         }
-        .highlight {
-            font-weight: bold;
-            color: #333333;
+        .whatsapp-button:hover {
+            background-color: #2a8645;
         }
     </style>
 </head>
-<body>
+<body style="color: black">
     <div class="container">
         <div class="header">
             <img src="cid:header" alt="header">
@@ -76,6 +77,7 @@
             <div class="highlight">{{ kelas }}</div>
             <p>Tanggal main event: <span class="highlight">10 Juni 2024</span></p>
 
+            <br>
             <div class="qr-code">
                 <p style="margin: 0;">Pakai kode QR di bawah ini untuk registrasi di main event:</p>
                 <img src="cid:qrcode" alt="header">
@@ -83,14 +85,15 @@
 
             <div class="whatsapp-link">
                 <p >Gabung grup Whatsapp kita untuk informasi lebih lanjut, ya!</p>
-                <a href="{{ whatsappLink }}" target="_blank" class="whatsapp-button">Gabung Grup Whatsapp</a>
+                <a href="{{ whatsappLink }}" target="_blank" class="whatsapp-button" style="color: #ffffff; text-decoration: none;">Gabung Grup Whatsapp</a>
             </div>
+            <br>
             
             <p>Sampai bertemu di main event, ya!</p>
             <p>Salam hangat,<br>Panitia Introduction to Psychology</p>
         </div>
-        <div class="footer">
-            <p>&copy; 2024 Fakultas Psikologi, Universitas Indonesia</p>
+        <div>
+            <p class="footer">&copy; 2024 Fakultas Psikologi, Universitas Indonesia</p>
         </div>
     </div>
 </body>
