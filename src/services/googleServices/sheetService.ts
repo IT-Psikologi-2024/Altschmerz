@@ -26,7 +26,7 @@ const sheetAppend = async (values : TicketValues [][]| MerchValues [][], range :
                 },
             });
         
-        console.log('Row appended:', response.data);
+        console.log('Row appended:', response.data.updates.updatedRange);
 
         return response;
 

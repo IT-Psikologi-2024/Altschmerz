@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { sheetRequest, sheetAppend } from './googleServices/sheetService';
-import { driveUpload } from './googleServices/driveService';
 import { Merch, MerchValues } from '../interfaces/sheetInterface';
-import { File } from '../interfaces/fileInterface';
 import { v4 as uuidv4 } from 'uuid';
 
 let requestQueue: {req: Request, res: Response} [] = []
@@ -38,16 +36,8 @@ const merch = async (req: Request, res: Response) => {
     const { nama, idLine, noTelepon, email, alamat, kodePos, pengambilanBarang, notes, orders, extraBubblewrap, ongkir } = req.body;
 
     const totalHarga = await countTotalHarga(orders, extraBubblewrap, ongkir)
-
-    const files = req.files as File[];
-
-    if (files.length != 1) {
-      res.status(401).json({ error: 'File(s) missing' });
-      return;
-    }
-
-    const fileBuktiPembayaran = files[0];
-    const buktiPembayaran = await driveUpload(nama, fileBuktiPembayaran, "Merch/Payment");
+    
+    const buktiPembayaran = res.locals.buktiPembayaran
 
     const banyak_item = orders.length
     let startRowIndex;

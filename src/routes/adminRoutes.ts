@@ -1,4 +1,4 @@
-import { verifyToken } from "../middlewares/verifyToken";
+import { verifyToken } from "../middlewares/verifyTokenMiddleware";
 import { login, refresh, attend } from "../services/adminService";
 import express from "express";
 

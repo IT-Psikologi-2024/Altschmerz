@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { driveUpload } from './googleServices/driveService';
 import { sheetAppend } from './googleServices/sheetService';
 import { TicketValues } from '../interfaces/sheetInterface';
-import { File } from '../interfaces/fileInterface';
 import { UUID } from 'crypto';
 
 let requestQueue: {req: Request, res: Response} [] = []
@@ -39,18 +37,8 @@ const ticket = async (req: Request, res: Response) => {
         // const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = JSON.parse(pilihanKelas)
         const [ pilihanPertama, pilihanKedua, pilihanKetiga ] = pilihanKelas
 
-        const files = req.files as File[]
-
-        if (files.length != 2) {
-            res.status(401).json({ error: 'File(s) missing' });
-            return;
-        }
-
-        const fileBuktiFollow = files[0]
-        const fileBuktiPembayaran = files[1]
-
-        const buktiFollow = await driveUpload(nama, fileBuktiFollow, "Ticket/Follow")
-        const buktiPembayaran = await driveUpload(nama, fileBuktiPembayaran, "Ticket/Payment")
+        const buktiFollow = res.locals.buktiFollow
+        const buktiPembayaran = res.locals.buktiPembayaran
 
         const ticketValues: TicketValues = { 
             id, 

@@ -91,14 +91,16 @@ const ticketEmail = async (req: Request, res: Response) => {
                     }]
                 };
                 
-                promises.push (gmailSend(mailOptions)
+                promises.push (
+                    gmailSend(mailOptions)
                     .then (async (recipient : string) => {
-                        console.log(`Email sent successfully to: ${recipient}`);
                         await sheetUpdate('Terkirim', `Ticket!O${i + 1}`);
+                        console.log(`Email sent successfully to: ${recipient}`);
                     })
                     .catch((sendError) => {
                         console.error(`Failed to send email to ${email}:`, sendError.message);
-                    }))
+                    })
+                )
             }
         }
 
@@ -267,14 +269,16 @@ const merchEmail = async (req: Request, res: Response) => {
                     attachments: attachments
                 };
                 
-                promises.push (gmailSend(mailOptions)
+                promises.push (
+                    gmailSend(mailOptions)
                     .then (async (recipient : string) => {
                         await sheetUpdate('Terkirim', `Merch!S${i + 1}`);
                         console.log(`Email sent successfully to: ${recipient}`);
                     })
                     .catch((sendError) => {
                         console.error(`Failed to send email to ${email}:`, sendError.message);
-                    }))
+                    })
+                )
             }
         }
 
