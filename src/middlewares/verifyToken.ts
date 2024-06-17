@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     try {
+        const accessSecretKey = process.env.ACCESS_TOKEN_SECRET_KEY
+
         let token = req.headers.authorization
     
         if (!token) {
@@ -12,9 +14,8 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
         }
 
         token = token.split(' ')[1];
-        const secretKey = process.env.JWT_SECRET_KEY
-    
-        jwt.verify(token, secretKey) as { [key: string]: any };
+        
+        jwt.verify(token, accessSecretKey);
 
         next();
     } catch (e) {
