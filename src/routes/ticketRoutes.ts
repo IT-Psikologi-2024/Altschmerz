@@ -1,11 +1,10 @@
 import { ticketQueue } from "../services/ticketService";
-import { ticketDriveUpload } from "../middlewares/driveUploadMiddleware"
 import express from "express";
 import multer from "multer";
 
 const upload = multer();
 const router = express.Router();
 
-router.post("/", upload.any(), ticketDriveUpload, ticketQueue);
+router.post("/", upload.any(), ticketQueue);
 
 module.exports = router;

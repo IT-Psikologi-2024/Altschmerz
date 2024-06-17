@@ -3,12 +3,34 @@ import { sheetRequest, sheetAppend } from './googleServices/sheetService';
 import { Merch, MerchValues } from '../interfaces/sheetInterface';
 import { v4 as uuidv4 } from 'uuid';
 
-let requestQueue: {req: Request, res: Response} [] = []
+import { driveUpload} from '../services/googleServices/driveService';
+import { File } from '../interfaces/fileInterface';
+
+let requestQueue: {req: Request, res: Response, bukti: {buktiPembayaran: string}} [] = []
 let isProcessing = false
 
-const merchQueue = (req: Request, res: Response) => {
-    requestQueue.push({req, res})
-    processQueue()
+const merchQueue = async (req: Request, res: Response) => {
+    try {
+        const { nama } = req.body;
+
+        if (req.files.length != 1) {
+            res.status(401).json({ error: 'File(s) missing' });
+            return;
+        }
+
+        const [fileBuktiPembayaran] = req.files as File[]
+
+        const buktiPembayaran = await driveUpload(nama, fileBuktiPembayaran, "Merch/Payment");
+        const bukti = { buktiPembayaran }
+
+        requestQueue.push({req, res, bukti})
+        processQueue()
+
+    } catch (e) {
+        console.error('Error while uploading to drive:', e.message);
+        return res.status(401).json({ error: 'Error while uploading to drive: ' + e.message });
+    }
+    
 }
 
 const processQueue = async () => {
@@ -18,10 +40,10 @@ const processQueue = async () => {
 
     isProcessing = true
 
-    const { req, res } = requestQueue.shift();
+    const { req, res, bukti} = requestQueue.shift();
 
     try {
-        await merch(req, res)
+        await merch(req, res, bukti)
     } catch (error)  {
         console.error('Error processing merch request:', error);
     } 
@@ -30,14 +52,14 @@ const processQueue = async () => {
     processQueue()
 }
 
-const merch = async (req: Request, res: Response) => {
+const merch = async (req: Request, res: Response, bukti: {buktiPembayaran: string}) => {
   try {
     const id = uuidv4();
     const { nama, idLine, noTelepon, email, alamat, kodePos, pengambilanBarang, notes, orders, extraBubblewrap, ongkir } = req.body;
 
     const totalHarga = await countTotalHarga(orders, extraBubblewrap, ongkir)
     
-    const buktiPembayaran = res.locals.buktiPembayaran
+    const { buktiPembayaran } = bukti;
 
     const banyak_item = orders.length
     let startRowIndex;

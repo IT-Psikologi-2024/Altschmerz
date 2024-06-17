@@ -33,7 +33,7 @@ const getVerifiedBuyer = async (req: Request, res: Response) => {
             .filter((row : string[]) => row[17] === "Iya" && row[18] === "Pending")
             .map((row : string[]) => {
                 const name = row[1];
-                const email = row[3];
+                const email = row[4];
                 return { name, email };
             });
 
