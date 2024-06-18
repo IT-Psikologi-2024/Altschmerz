@@ -54,7 +54,7 @@ const getOngkir = async (req: Request, res: Response) => {
         const data = {
             origin: 153, // Jakarta Selatan
             destination: cityId,
-            weight: 500, // 500g
+            weight: 500,
             courier: 'jne'
         }
 
@@ -68,9 +68,13 @@ const getOngkir = async (req: Request, res: Response) => {
           });
           
           const result = await response.json();
-          const cost = result.rajaongkir.results[0].costs[1].cost[0].value // JNE Reg
+
+          const { origin_details, destination_details, results } = result.rajaongkir
+          const from = `${origin_details.type} ${origin_details.city_name}`
+          const to = `${destination_details.type} ${destination_details.city_name}`
+          const { service, cost } = results[0].costs[0] // JNE OKE
           
-        res.status(200).json({cost});
+        res.status(200).json({from, to, service, cost : cost[0].value});
     } catch (e) {
         console.error('Error while fetching ongkir:', e.message);
         res.status(500).json({ error: 'Error while fetching ongkir: ' + e.message });
